@@ -17,7 +17,7 @@ const ThemeSwitch = () => {
   return (
     <button
       onClick={() =>
-        setTheme(theme === "dark" ? "light" : "dark")
+        setTheme(theme === "light" ? "light" : "dark")
       }
       className="flex h-10 w-10 items-center justify-center rounded-lg border hover:bg-accent transition-colors"
       aria-label="Toggle Theme"
