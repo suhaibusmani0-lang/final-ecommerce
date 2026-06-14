@@ -1,95 +1,43 @@
-import { NextResponse } from "next/server";
-import nodemailer from "nodemailer";
 import { connectDB } from "@/lib/databaseConnection";
-import Usermodel from "@/models/Usermodel";
-import { zSchema } from "@/lib/zodSchema";
+import UserModel from "@/models/User.model";
+import OtpModel from "@/models/Otp.model";
+import { sendEmail } from "@/lib/sentMail";
 import { forgotPasswordOtpEmail } from "@/email/forgetpassword";
+
+function jsonResponse(status, message, data = null) {
+  return Response.json({ ok: status < 400, message, data }, { status });
+}
 
 export async function POST(request) {
   try {
-    // Database Connection
     await connectDB();
 
-    const payload = await request.json();
+    const { email } = await request.json();
 
-    // Validation
-    const validationSchema = zSchema.pick({
-      email: true,
-    });
+    if (!email) return jsonResponse(400, "Email is required");
 
-    const validateData = validationSchema.safeParse(payload);
+    const normalizedEmail = email.toLowerCase().trim();
 
-    if (!validateData.success) {
-      return NextResponse.json(
-        {
-          success: false,
-          message: "Invalid email address",
-        },
-        { status: 400 }
-      );
+    const user = await UserModel.findOne({ email: normalizedEmail });
+
+    if (!user) {
+      return jsonResponse(404, "No account found with this email");
     }
 
-    const { email } = validateData.data;
+    const otp = Math.floor(100000 + Math.random() * 900000).toString();
 
-    // Find User
-    const getUser = await Usermodel.findOne({
-      email,
-    });
+    await OtpModel.deleteMany({ email: normalizedEmail });
+    await OtpModel.create({ email: normalizedEmail, otp });
 
-    if (!getUser) {
-      return NextResponse.json(
-        {
-          success: false,
-          message: "User not found with this email",
-        },
-        { status: 404 }
-      );
-    }
+   await sendEmail(
+  normalizedEmail,
+  "Password Reset OTP",
+  forgotPasswordOtpEmail(otp)
+);
 
-    // Generate OTP
-    const otp = Math.floor(
-      100000 + Math.random() * 900000
-    ).toString();
-
-    // Save OTP
-    getUser.otp = otp;
-    getUser.otpExpiry = new Date(
-      Date.now() + 10 * 60 * 1000
-    );
-
-    await getUser.save();
-
-    // Mail Transporter
-    const transporter = nodemailer.createTransport({
-      service: "gmail",
-      auth: {
-        user: process.env.NODEMAILER_USER,
-        pass: process.env.NODEMAILER_PASS,
-      },
-    });
-
-    // Fire-and-forget: send OTP email without blocking the response
-    transporter.sendMail({
-      from: `"DrChex" <${process.env.NODEMAILER_USER}>`,
-      to: email,
-      subject: "Password Reset OTP",
-      html: forgotPasswordOtpEmail(otp),
-    }).then((info) => console.log("Mail Sent:", info.messageId))
-      .catch((err) => console.error("Failed to send forgot-password OTP email:", err));
-
-    return NextResponse.json({
-      success: true,
-      message: "OTP sent successfully",
-    });
+    return jsonResponse(200, "OTP sent successfully");
   } catch (error) {
-    console.error("Forgot Password Error:", error);
-
-    return NextResponse.json(
-      {
-        success: false,
-        message: error.message || "Failed to send OTP",
-      },
-      { status: 500 }
-    );
+    console.error("Forgot password sendotp error:", error);
+    return jsonResponse(500, error instanceof Error ? error.message : "Internal Server Error");
   }
 }

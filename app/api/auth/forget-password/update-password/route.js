@@ -1,50 +1,39 @@
 import { connectDB } from "@/lib/databaseConnection";
-import Usermodel from "@/models/Usermodel";
-import { zSchema } from "@/lib/zodSchema";
+import UserModel from "@/models/User.model";
+import bcrypt from "bcrypt";
+
+function jsonResponse(status, message, data = null) {
+  return Response.json({ ok: status < 400, message, data }, { status });
+}
 
 export async function PUT(request) {
   try {
-    await connectDb();
+    await connectDB();
 
-    const payload = await request.json();
+    const { email, password } = await request.json();
 
-    const validationSchema = zSchema.pick({
-      email: true,
-      password: true,
-    });
-
-    const validatedData = validationSchema.safeParse(payload);
-
-    if (!validatedData.success) {
-      return response(
-        false,
-        400,
-        "Invalid or missing fields",
-        validatedData.error
-      );
+    if (!email || !password) {
+      return jsonResponse(400, "Email and password are required");
     }
 
-    const { email, password } = validatedData.data;
-
-    const getUser = await Usermodel.findOne({
-      email,
-      deletedAt: null,
-    }).select("+password");
-
-    if (!getUser) {
-      return response(false, 404, "User not found");
+    if (password.length < 6) {
+      return jsonResponse(400, "Password must be at least 6 characters");
     }
 
-    getUser.password = password; // Hash if required
+    const normalizedEmail = email.toLowerCase().trim();
 
-    await getUser.save();
+    const user = await UserModel.findOne({ email: normalizedEmail }).select("+password");
 
-    return response(
-      true,
-      200,
-      "Password updated successfully!"
-    );
+    if (!user) {
+      return jsonResponse(404, "User not found");
+    }
+
+    user.password = await bcrypt.hash(password, 10);
+    await user.save();
+
+    return jsonResponse(200, "Password updated successfully");
   } catch (error) {
-    return catcherror(error);
+    console.error("Update password error:", error);
+    return jsonResponse(500, error instanceof Error ? error.message : "Internal Server Error");
   }
 }

@@ -6,10 +6,10 @@ import Link from "next/link";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
-
 import { WEBSITE_REGISTER } from "@/routes/websiteRoutes";
 import ButtonLoading from "@/components/application/buttonLoading";
 import OtpVarification from "@/components/application/otpvarification";
+import UpdatePassword from "@/components/application/UpdatePassword";
 import { showToast } from "@/lib/showToast";
 
 import {
@@ -230,12 +230,21 @@ function ForgetPasswordPage() {
             </CardHeader>
 
             <CardContent>
-              <OtpVarification
+              <>
+               {!IsotpVerify
+               ?
+               <OtpVarification
                 email={otpmail}
                 onSubmit={handleOtpVerification}
                 onResend={(email: string) => handleEmailVarification({ email })}
                 loading={loading}
               />
+                :
+                <UpdatePassword email={otpmail}   />
+                }
+              </>
+             
+              
             </CardContent>
           </>
         )}

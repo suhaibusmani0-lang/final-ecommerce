@@ -5,13 +5,15 @@ import Image from "next/image";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
-import {WEBSITE_REGISTER,WEBSITE_FORGOT_PASSWORD} from "@/routes/websiteRoutes"
+import {WEBSITE_REGISTER,WEBSITE_FORGOT_PASSWORD,WEBSITE_USER_DASHBOARD} from "@/routes/websiteRoutes"
 import ButtonLoading from "@/components/application/buttonLoading";
 import { showToast } from "@/lib/showToast";
 import { Eye, EyeOff } from "lucide-react";
 import OtpVarification from "@/components/application/otpvarification";
 import { useDispatch } from "react-redux";
 import { login } from "@/store/reducer/authReducer";
+import { ADMIN_DASHBOARD } from "@/routes/adminPanelRoutes";
+
 import {
   Card,
   CardContent,
@@ -19,6 +21,7 @@ import {
 } from "@/components/ui/card";
 import Link from "next/link";
 import { useEffect } from "react";
+import { useRouter, useSearchParams } from "next/navigation";
 
 export const ROUTES = {
   REGISTER: "/auth/register",
@@ -39,7 +42,9 @@ export const formSchema = z.object({
 
 const LoginPage = () => {
   const dispatch = useDispatch();
-
+  const searchParams= useSearchParams()
+  const router=useRouter()
+  const callback = searchParams.get("callback");
   // Auto-redirect if already logged in via JWT session
   useEffect(() => {
     fetch("/api/auth/me")
@@ -86,8 +91,18 @@ const LoginPage = () => {
       }
 
       showToast("success", result?.message || "OTP verified successfully.");
-      dispatch(login(result?.data?.user || { email: otpmail }));
-      window.location.href = "/";
+      const user = result?.data?.user;
+      dispatch(login(user || { email: otpmail }));
+      if (callback && callback.startsWith("/")) {
+        router.push(callback);
+      } else {
+        router.push(
+          user?.role === "admin"
+            ? ADMIN_DASHBOARD
+            : WEBSITE_USER_DASHBOARD
+        );
+      }
+      // window.location.href = "/";
     } catch (err) {
       const message = err instanceof Error ? err.message : "OTP verification failed";
       showToast("error", message);

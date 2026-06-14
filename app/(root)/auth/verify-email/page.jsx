@@ -21,7 +21,12 @@ function EmailVerificationContent() {
   const [status, setStatus] = React.useState("verifying");
   const [message, setMessage] = React.useState("Verifying your email address...");
 
+  const hasVerified = React.useRef(false);
+
   React.useEffect(() => {
+    if (hasVerified.current) return;
+    hasVerified.current = true;
+
     if (!token || !email) {
       setStatus("error");
       setMessage("Invalid verification link.");

@@ -2,6 +2,7 @@
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 =======
 >>>>>>> 7d446605f14372f33441671404476fcc8a3b5563
 This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
@@ -55,3 +56,7 @@ Learning node js
 >>>>>>> f05f6e8e2c7b92f0ef1b653ee6af7d1923670b67
 =======
 >>>>>>> 7d446605f14372f33441671404476fcc8a3b5563
+=======
+# cx
+cx
+>>>>>>> dbc56caf875a30c6b38e1df2eafc149d3b4efeec

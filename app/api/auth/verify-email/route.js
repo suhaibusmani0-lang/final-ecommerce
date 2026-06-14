@@ -17,6 +17,16 @@ export async function GET(request) {
       return Response.json({ ok: false, message: "Invalid verification link" }, { status: 400 });
     }
 
+    // Check if already verified
+    const alreadyVerified = await UserModel.findOne({
+      email: email.toLowerCase(),
+      isEmailVerified: true,
+    });
+
+    if (alreadyVerified) {
+      return Response.json({ ok: true, message: "Email already verified" }, { status: 200 });
+    }
+
     const user = await UserModel.findOne({
       email: email.toLowerCase(),
       emailVerificationToken: token,
