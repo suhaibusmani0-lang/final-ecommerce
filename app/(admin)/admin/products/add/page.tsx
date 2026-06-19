@@ -3,8 +3,20 @@
 import { useEffect, useState } from "react";
 import Link from "next/link";
 
+interface Product {
+  _id: string;
+  name: string;
+  price: number;
+  stock: number;
+  isActive: boolean;
+  images?: string[];
+  category?: {
+    name: string;
+  };
+}
+
 export default function ProductsPage() {
-  const [products, setProducts] = useState([]);
+  const [products, setProducts] = useState<Product[]>([]);
   const [loading, setLoading] = useState(true);
 
   const fetchProducts = async () => {
