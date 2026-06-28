@@ -1,9 +1,16 @@
-import React from 'react'
+"use client";
 
-const MediaPage = () => {
+import BreadCrumb from "../../../../components/Admin/breadCrumb"; // Changed to PascalCase
+import UploadMedia from "../../../../components/Admin/UploadMedia";
+
+export default function MediaPage() {
+ 
+
   return (
-    <div>MediaPage</div>
-  )
+    <>
+      <BreadCrumb /> {/* Changed to PascalCase */}
+      <UploadMedia />
+      
+    </>
+  );
 }
-
-export default MediaPage

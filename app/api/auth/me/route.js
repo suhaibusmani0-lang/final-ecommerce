@@ -17,7 +17,7 @@ export async function GET() {
     await connectDB();
 
     const user = await UserModel.findById(session.userId)
-      .select("name email role avatar isEmailVerified phone address");
+      .select("name email role avatar isEmailVerified phone addresses");
 
     if (!user) {
       return jsonResponse(404, "User not found");
@@ -31,7 +31,7 @@ export async function GET() {
       avatar: user.avatar,
       isEmailVerified: user.isEmailVerified,
       phone: user.phone,
-      address: user.address,
+      addresses: user.addresses,
     });
   } catch (error) {
     console.error("Get session error:", error);

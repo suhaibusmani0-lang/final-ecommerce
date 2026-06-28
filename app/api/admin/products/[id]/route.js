@@ -1,39 +1,45 @@
+// app/api/admin/products/[id]/route.js
 import { connectDB } from "@/lib/databaseConnection";
-import { requireAdmin, jsonRes } from "@/lib/adminMiddleware";
 import ProductModel from "@/models/Product.model";
+import { jsonRes } from "@/lib/adminMiddleware";
 
-export async function GET(_, { params }) {
+export async function GET(req, { params }) {
   try {
     await connectDB();
-    const product = await ProductModel.findById(params.id).populate("category", "name slug");
+    const product = await ProductModel.findById(params.id)
+      .populate("category", "_id name");
     if (!product) return jsonRes(404, "Product not found");
-    return jsonRes(200, "Product fetched", product);
+    return jsonRes(200, "Product fetched", { product });
   } catch (e) {
     return jsonRes(500, e.message);
   }
 }
 
 export async function PUT(req, { params }) {
-  const deny = await requireAdmin();
-  if (deny) return deny;
   try {
     await connectDB();
-    const body = await req.json();
-    const product = await ProductModel.findByIdAndUpdate(params.id, body, { new: true, runValidators: true }).populate("category", "name slug");
-    if (!product) return jsonRes(404, "Product not found");
-    return jsonRes(200, "Product updated", product);
-  } catch (e) {
-    return jsonRes(500, e.message);
-  }
-}
+    const formData = await req.formData();
+    const updateData = {};
+    for (const [key, value] of formData.entries()) {
+      // Skip files for now; handle images if needed
+      if (key !== "images") {
+        updateData[key] = value;
+      }
+    }
+    // Convert numeric fields
+    if (updateData.price) updateData.price = parseFloat(updateData.price);
+    if (updateData.salePrice) updateData.salePrice = parseFloat(updateData.salePrice);
+    if (updateData.stock) updateData.stock = parseInt(updateData.stock);
+    // Boolean fields
+    ["isFeatured", "isNewArrival", "isBestSeller", "isActive"].forEach(field => {
+      if (updateData[field] !== undefined) {
+        updateData[field] = updateData[field] === "true";
+      }
+    });
 
-export async function DELETE(_, { params }) {
-  const deny = await requireAdmin();
-  if (deny) return deny;
-  try {
-    await connectDB();
-    await ProductModel.findByIdAndDelete(params.id);
-    return jsonRes(200, "Product deleted");
+    const product = await ProductModel.findByIdAndUpdate(params.id, updateData, { new: true });
+    if (!product) return jsonRes(404, "Product not found");
+    return jsonRes(200, "Product updated", { product });
   } catch (e) {
     return jsonRes(500, e.message);
   }

@@ -39,14 +39,36 @@ export async function POST(req) {
 
     const totalAmount = subtotal + shipping - discount;
 
+    const ProductModel = (await import("@/models/Product.model")).default;
+    for (const item of items) {
+      const productId = item.productId || item.id;
+      const product = await ProductModel.findById(productId);
+      if (!product) return jsonRes(400, `Product not found: ${item.name}`);
+      if (product.stock < item.qty) return jsonRes(400, `Insufficient stock for ${item.name}`);
+    }
+
     const order = await OrderModel.create({
       user: session.userId,
-      items: items.map((i) => ({ product: i.id, name: i.name, image: i.image, price: i.price, qty: i.qty })),
+      items: items.map((i) => ({
+        product: i.productId || i.id,
+        name: i.name,
+        image: i.image,
+        price: i.price,
+        qty: i.qty,
+      })),
       totalAmount,
       shippingAddress,
       status: "Pending",
       paymentStatus: "Unpaid",
     });
+
+    for (const item of items) {
+      const productId = item.productId || item.id;
+      await ProductModel.findByIdAndUpdate(productId, { $inc: { stock: -item.qty } });
+    }
+
+    const CartModel = (await import("@/models/Cart.model")).default;
+    await CartModel.findOneAndUpdate({ user: session.userId }, { items: [], totalAmount: 0 });
 
     return jsonRes(201, "Order placed successfully", {
       orderId: order._id,

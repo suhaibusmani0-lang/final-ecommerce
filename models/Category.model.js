@@ -17,11 +17,14 @@ const categorySchema = new mongoose.Schema(
       type: String,
       default: "",
     },
+    image: {
+      url: { type: String, default: "" },
+      public_id: { type: String, default: "" },
+    },
     isActive: {
       type: Boolean,
       default: true,
     },
-
     isDeleted: {
       type: Boolean,
       default: false,

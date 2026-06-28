@@ -1,0 +1,63 @@
+import { connectDB } from "@/lib/databaseConnection";
+import CategoryModel from "@/models/Category.model";
+import ProductModel from "@/models/Product.model";
+import { jsonRes } from "@/lib/adminMiddleware";
+
+export async function GET(req) {
+  try {
+    await connectDB();
+    const { searchParams } = new URL(req.url);
+    const slug = searchParams.get("slug");
+
+    if (slug) {
+      const category = await CategoryModel.findOne({ slug, isActive: true, isDeleted: false });
+      if (!category) return jsonRes(404, "Category not found");
+
+      const page = parseInt(searchParams.get("page") || "1");
+      const limit = parseInt(searchParams.get("limit") || "12");
+      const sort = searchParams.get("sort") || "newest";
+
+      let sortOption = {};
+      switch (sort) {
+        case "price-low":
+          sortOption = { price: 1 };
+          break;
+        case "price-high":
+          sortOption = { price: -1 };
+          break;
+        case "popular":
+          sortOption = { "ratings.count": -1 };
+          break;
+        case "rating":
+          sortOption = { "ratings.average": -1 };
+          break;
+        default:
+          sortOption = { createdAt: -1 };
+      }
+
+      const [products, total] = await Promise.all([
+        ProductModel.find({ category: category._id, isActive: true })
+          .populate("category", "name slug")
+          .sort(sortOption)
+          .skip((page - 1) * limit)
+          .limit(limit),
+        ProductModel.countDocuments({ category: category._id, isActive: true }),
+      ]);
+
+      return jsonRes(200, "Category fetched", { 
+        category, 
+        products, 
+        total, 
+        page, 
+        pages: Math.ceil(total / limit),
+        hasMore: page * limit < total 
+      });
+    }
+
+    const categories = await CategoryModel.find({ isActive: true, isDeleted: false })
+      .sort({ createdAt: -1 });
+    return jsonRes(200, "Categories fetched", categories);
+  } catch (e) {
+    return jsonRes(500, e.message);
+  }
+}

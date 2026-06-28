@@ -1,16 +1,55 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import { User, ShoppingBag, MapPin, Settings, LogOut, Package, Heart, CreditCard, ChevronRight, Edit2, Check } from "lucide-react";
 import { logout } from "@/store/reducer/authReducer";
 import { persistor } from "@/store/store";
-import { RootState } from "@/store/store";
 
 export default function MyAccount() {
   const [activeTab, setActiveTab] = useState("profile");
+  const [loading, setLoading] = useState(true);
+  const [orders, setOrders] = useState([]);
+  const [addresses, setAddresses] = useState([]);
+  const [wishlist, setWishlist] = useState([]);
   const dispatch = useDispatch();
   const auth = useSelector((s) => s.authStore.auth);
+
+  useEffect(() => {
+    if (!auth) return;
+    fetchData();
+  }, [activeTab, auth]);
+
+  const fetchData = async () => {
+    if (!auth) return;
+    try {
+      setLoading(true);
+
+      if (activeTab === "orders") {
+        const res = await fetch("/api/orders");
+        if (res.ok) {
+          const data = await res.json();
+          setOrders(data.data || []);
+        }
+      } else if (activeTab === "addresses") {
+        const res = await fetch("/api/user/addresses");
+        if (res.ok) {
+          const data = await res.json();
+          setAddresses(data.data || []);
+        }
+      } else if (activeTab === "wishlist") {
+        const res = await fetch("/api/wishlist");
+        if (res.ok) {
+          const data = await res.json();
+          setWishlist(data.data?.items || []);
+        }
+      }
+    } catch (error) {
+      console.error("Failed to fetch data:", error);
+    } finally {
+      setLoading(false);
+    }
+  };
 
   const handleLogout = async () => {
     await fetch("/api/auth/logout", { method: "POST" });
@@ -25,23 +64,6 @@ export default function MyAccount() {
     { id: "addresses", label: "Addresses", icon: MapPin },
     { id: "wishlist", label: "Wishlist", icon: Heart },
     { id: "settings", label: "Settings", icon: Settings },
-  ];
-
-  const mockOrders = [
-    { id: "ORD-2024-001", date: "2024-01-15", status: "Delivered", total: "₹4,599", items: 3 },
-    { id: "ORD-2024-002", date: "2024-02-20", status: "Shipped", total: "₹2,899", items: 2 },
-    { id: "ORD-2024-003", date: "2024-03-10", status: "Processing", total: "₹7,250", items: 5 },
-  ];
-
-  const mockAddresses = [
-    { id: 1, type: "Home", name: "John Doe", address: "123 Main Street, Apt 4B", city: "Mumbai", state: "Maharashtra", pincode: "400001", phone: "+91 98765 43210", default: true },
-    { id: 2, type: "Office", name: "John Doe", address: "456 Business Park, Tower A", city: "Mumbai", state: "Maharashtra", pincode: "400051", phone: "+91 98765 43210", default: false },
-  ];
-
-  const mockWishlist = [
-    { id: 1, name: "Premium Cotton Shirt", price: "₹1,299", image: "/api/placeholder/200/200", inStock: true },
-    { id: 2, name: "Slim Fit Chinos", price: "₹1,899", image: "/api/placeholder/200/200", inStock: false },
-    { id: 3, name: "Leather Belt", price: "₹799", image: "/api/placeholder/200/200", inStock: true },
   ];
 
   return (
@@ -123,15 +145,7 @@ export default function MyAccount() {
                   </div>
                   <div>
                     <label className="block text-sm font-medium text-[#1A1A1A]/60 mb-2">Phone Number</label>
-                    <p className="text-[#1A1A1A] font-medium">+91 98765 43210</p>
-                  </div>
-                  <div>
-                    <label className="block text-sm font-medium text-[#1A1A1A]/60 mb-2">Date of Birth</label>
-                    <p className="text-[#1A1A1A] font-medium">January 15, 1990</p>
-                  </div>
-                  <div className="md:col-span-2">
-                    <label className="block text-sm font-medium text-[#1A1A1A]/60 mb-2">Gender</label>
-                    <p className="text-[#1A1A1A] font-medium">Male</p>
+                    <p className="text-[#1A1A1A] font-medium">{auth?.phone || "+91 98765 43210"}</p>
                   </div>
                 </div>
 
@@ -166,39 +180,46 @@ export default function MyAccount() {
               <div className="bg-white rounded-2xl shadow-sm p-6 md:p-8">
                 <h2 className="text-xl font-semibold text-[#1A1A1A] mb-6">Order History</h2>
 
-                <div className="space-y-4">
-                  {mockOrders.map((order) => (
-                    <div key={order.id} className="border border-gray-100 rounded-xl p-4 hover:border-[#C17A56]/30 transition-colors">
-                      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-                        <div className="flex items-start gap-4">
-                          <div className="w-12 h-12 rounded-lg bg-gray-50 flex items-center justify-center">
-                            <Package size={20} className="text-[#C17A56]" />
+                {loading ? (
+                  <div className="text-center py-8 text-[#1A1A1A]/60">Loading orders...</div>
+                ) : orders.length === 0 ? (
+                  <div className="text-center py-8 text-[#1A1A1A]/60">No orders found</div>
+                ) : (
+                  <div className="space-y-4">
+                    {orders.map((order) => (
+                      <div key={order._id} className="border border-gray-100 rounded-xl p-4 hover:border-[#C17A56]/30 transition-colors">
+                        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+                          <div className="flex items-start gap-4">
+                            <div className="w-12 h-12 rounded-lg bg-gray-50 flex items-center justify-center">
+                              <Package size={20} className="text-[#C17A56]" />
+                            </div>
+                            <div>
+                              <p className="font-semibold text-[#1A1A1A]">ORD-{order._id.slice(-6)}</p>
+                              <p className="text-sm text-[#1A1A1A]/60">{new Date(order.createdAt).toLocaleDateString()}</p>
+                            </div>
                           </div>
-                          <div>
-                            <p className="font-semibold text-[#1A1A1A]">{order.id}</p>
-                            <p className="text-sm text-[#1A1A1A]/60">{order.date}</p>
-                          </div>
-                        </div>
-                        <div className="flex items-center gap-6">
-                          <div className="text-right">
-                            <p className="font-semibold text-[#1A1A1A]">{order.total}</p>
-                            <p className="text-sm text-[#1A1A1A]/60">{order.items} items</p>
-                          </div>
-                          <div className="flex items-center gap-2">
-                            <span className={`px-3 py-1 rounded-full text-xs font-medium ${
-                              order.status === "Delivered" ? "bg-green-100 text-green-700" :
-                              order.status === "Shipped" ? "bg-blue-100 text-blue-700" :
-                              "bg-yellow-100 text-yellow-700"
-                            }`}>
-                              {order.status}
-                            </span>
-                            <ChevronRight size={16} className="text-[#1A1A1A]/40" />
+                          <div className="flex items-center gap-6">
+                            <div className="text-right">
+                              <p className="font-semibold text-[#1A1A1A]">₹{order.totalAmount.toLocaleString()}</p>
+                              <p className="text-sm text-[#1A1A1A]/60">{order.items.length} items</p>
+                            </div>
+                            <div className="flex items-center gap-2">
+                              <span className={`px-3 py-1 rounded-full text-xs font-medium ${
+                                order.status === "Delivered" ? "bg-green-100 text-green-700" :
+                                order.status === "Shipped" ? "bg-blue-100 text-blue-700" :
+                                order.status === "Processing" ? "bg-yellow-100 text-yellow-700" :
+                                "bg-gray-100 text-gray-700"
+                              }`}>
+                                {order.status}
+                              </span>
+                              <ChevronRight size={16} className="text-[#1A1A1A]/40" />
+                            </div>
                           </div>
                         </div>
                       </div>
-                    </div>
-                  ))}
-                </div>
+                    ))}
+                  </div>
+                )}
               </div>
             )}
 
@@ -212,30 +233,34 @@ export default function MyAccount() {
                   </button>
                 </div>
 
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  {mockAddresses.map((address) => (
-                    <div key={address.id} className="border border-gray-100 rounded-xl p-4 hover:border-[#C17A56]/30 transition-colors">
-                      <div className="flex items-start justify-between mb-3">
-                        <div className="flex items-center gap-2">
-                          <span className="px-2 py-1 bg-gray-100 rounded-md text-xs font-medium text-[#1A1A1A]">{address.type}</span>
-                          {address.default && (
-                            <span className="flex items-center gap-1 text-xs text-[#C17A56]">
-                              <Check size={12} />
-                              Default
-                            </span>
-                          )}
+                {addresses.length === 0 ? (
+                  <div className="text-center py-8 text-[#1A1A1A]/60">No addresses saved</div>
+                ) : (
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    {addresses.map((address, idx) => (
+                      <div key={idx} className="border border-gray-100 rounded-xl p-4 hover:border-[#C17A56]/30 transition-colors">
+                        <div className="flex items-start justify-between mb-3">
+                          <div className="flex items-center gap-2">
+                            <span className="px-2 py-1 bg-gray-100 rounded-md text-xs font-medium text-[#1A1A1A]">{address.type}</span>
+                            {address.isDefault && (
+                              <span className="flex items-center gap-1 text-xs text-[#C17A56]">
+                                <Check size={12} />
+                                Default
+                              </span>
+                            )}
+                          </div>
+                          <button className="text-[#1A1A1A]/40 hover:text-[#C17A56] transition-colors">
+                            <Edit2 size={16} />
+                          </button>
                         </div>
-                        <button className="text-[#1A1A1A]/40 hover:text-[#C17A56] transition-colors">
-                          <Edit2 size={16} />
-                        </button>
+                        <p className="font-medium text-[#1A1A1A]">{address.name}</p>
+                        <p className="text-sm text-[#1A1A1A]/70 mt-1">{address.address}</p>
+                        <p className="text-sm text-[#1A1A1A]/70">{address.city}, {address.state} - {address.pincode}</p>
+                        <p className="text-sm text-[#1A1A1A]/70 mt-1">{address.phone}</p>
                       </div>
-                      <p className="font-medium text-[#1A1A1A]">{address.name}</p>
-                      <p className="text-sm text-[#1A1A1A]/70 mt-1">{address.address}</p>
-                      <p className="text-sm text-[#1A1A1A]/70">{address.city}, {address.state} - {address.pincode}</p>
-                      <p className="text-sm text-[#1A1A1A]/70 mt-1">{address.phone}</p>
-                    </div>
-                  ))}
-                </div>
+                    ))}
+                  </div>
+                )}
               </div>
             )}
 
@@ -243,39 +268,39 @@ export default function MyAccount() {
               <div className="bg-white rounded-2xl shadow-sm p-6 md:p-8">
                 <h2 className="text-xl font-semibold text-[#1A1A1A] mb-6">My Wishlist</h2>
 
-                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-                  {mockWishlist.map((item) => (
-                    <div key={item.id} className="border border-gray-100 rounded-xl overflow-hidden hover:border-[#C17A56]/30 transition-colors group">
-                      <div className="aspect-square bg-gray-50 relative">
-                        <div className="w-full h-full flex items-center justify-center text-[#1A1A1A]/20">
-                          <Package size={48} />
+                {loading ? (
+                  <div className="text-center py-8 text-[#1A1A1A]/60">Loading wishlist...</div>
+                ) : wishlist.length === 0 ? (
+                  <div className="text-center py-8 text-[#1A1A1A]/60">Your wishlist is empty</div>
+                ) : (
+                  <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+                    {wishlist.map((item) => (
+                      <div key={item._id} className="border border-gray-100 rounded-xl overflow-hidden hover:border-[#C17A56]/30 transition-colors group">
+                        <div className="aspect-square bg-gray-50 relative">
+                          {item.product?.images?.[0]?.url ? (
+                            <img
+                              src={item.product.images[0].url}
+                              alt={item.product.name}
+                              className="w-full h-full object-cover"
+                            />
+                          ) : (
+                            <div className="w-full h-full flex items-center justify-center text-[#1A1A1A]/20">
+                              <Package size={48} />
+                            </div>
+                          )}
                         </div>
-                        <button className="absolute top-3 right-3 w-8 h-8 bg-white rounded-full flex items-center justify-center shadow-sm opacity-0 group-hover:opacity-100 transition-opacity">
-                          <Heart size={16} className="text-red-500 fill-red-500" />
-                        </button>
-                      </div>
-                      <div className="p-4">
-                        <h3 className="font-medium text-[#1A1A1A] text-sm">{item.name}</h3>
-                        <div className="flex items-center justify-between mt-2">
-                          <p className="font-semibold text-[#C17A56]">{item.price}</p>
-                          <span className={`text-xs ${item.inStock ? "text-green-600" : "text-red-500"}`}>
-                            {item.inStock ? "In Stock" : "Out of Stock"}
-                          </span>
+                        <div className="p-4">
+                          <h3 className="font-medium text-[#1A1A1A] text-sm">{item.product?.name || "Product"}</h3>
+                          <div className="flex items-center justify-between mt-2">
+                            <p className="font-semibold text-[#C17A56]">
+                              ₹{(item.product?.salePrice || item.product?.price || 0).toLocaleString()}
+                            </p>
+                          </div>
                         </div>
-                        <button
-                          disabled={!item.inStock}
-                          className={`w-full mt-3 py-2 rounded-lg text-sm font-medium transition-colors ${
-                            item.inStock
-                              ? "bg-[#1A1A1A] text-white hover:bg-[#333]"
-                              : "bg-gray-100 text-gray-400 cursor-not-allowed"
-                          }`}
-                        >
-                          {item.inStock ? "Add to Cart" : "Out of Stock"}
-                        </button>
                       </div>
-                    </div>
-                  ))}
-                </div>
+                    ))}
+                  </div>
+                )}
               </div>
             )}
 

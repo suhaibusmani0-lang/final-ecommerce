@@ -43,10 +43,20 @@ const userSchema=new mongoose.Schema({
      type:String,
      trim:true
     }, 
-    address:{
-     type:String,
-     trim:true
-    },
+    addresses: [{
+        type: {
+            type: String,
+            enum: ['Home', 'Office', 'Other'],
+            default: 'Home'
+        },
+        name: { type: String, required: true },
+        phone: { type: String, required: true },
+        address: { type: String, required: true },
+        city: { type: String, required: true },
+        state: { type: String, required: true },
+        pincode: { type: String, required: true },
+        isDefault: { type: Boolean, default: false }
+    }],
     deletedAt:{
      type:Date,
      default:null,

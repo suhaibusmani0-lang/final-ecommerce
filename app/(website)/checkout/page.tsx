@@ -49,15 +49,20 @@ export default function CheckoutPage() {
 
   const applyCoupon = async () => {
     if (!couponCode.trim()) return;
-    const res = await fetch("/api/coupon-validate", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ code: couponCode, subtotal }),
-    });
-    const data = await res.json();
-    setCouponMsg({ text: data.message, ok: data.ok });
-    if (data.ok) setDiscount(data.data.discount);
-    else setDiscount(0);
+    try {
+      const res = await fetch("/api/coupon-validate", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ code: couponCode, subtotal }),
+      });
+      const data = await res.json();
+      setCouponMsg({ text: data.message, ok: data.ok });
+      if (data.ok) setDiscount(data.data.discount);
+      else setDiscount(0);
+    } catch (error) {
+      setCouponMsg({ text: "Invalid coupon code", ok: false });
+      setDiscount(0);
+    }
   };
 
   const handleSubmit = async (formData: FormData) => {
