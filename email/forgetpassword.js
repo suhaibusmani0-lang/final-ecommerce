@@ -21,7 +21,7 @@ export const forgotPasswordOtpEmail = (otp) => {
 <td align="center" style="padding:25px 20px 10px;">
 
 <img
-src="https://drchex.com/wp-content/uploads/2025/07/newlogo-1024x431.png"
+src="https://res.cloudinary.com/dd62irk0g/image/upload/v1782900519/logo-black1_jyozuq.jpg"
 alt="Logo"
 width="250"
 style="display:block;max-width:250px;width:100%;height:auto;"

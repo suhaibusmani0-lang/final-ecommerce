@@ -125,7 +125,7 @@ export const otpEmail = (otp) => {
 																	style="line-height:10px">
 																	<div style="max-width: 250px;"><img
 																			alt="reset-password" height="auto"
-																			src="https://drchex.com/wp-content/uploads/2025/07/newlogo-1024x431.png"
+																			src="https://res.cloudinary.com/dd62irk0g/image/upload/v1782900519/logo-black1_jyozuq.jpg"
 																			style="display: block; height: auto; border: 0; width: 100%;"
 																			title="reset-password" width="250" /></div>
 																</div>
@@ -190,9 +190,8 @@ export const otpEmail = (otp) => {
 																	<p style="margin: 0;">If you did not request this,
 																		please ignore this message.</p>
 																	 <p style="margin: 0;">Thank you,<br />
-                                                                        <a href="https://dhannajay.carrd.co/" style="color: #393d47;"
-                                                                            target="_blank">Developer
-                                                                            Dhannajay Pandey</a>
+                                                                        <a href="https://zarnetic.com/" style="color: #393d47;"
+                                                                            target="_blank">© 2026 All rights reserved. Developed by Zarnetic</a>
                                                                     </p>
 																</div>
 															</td>

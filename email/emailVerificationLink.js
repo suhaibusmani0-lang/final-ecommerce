@@ -127,7 +127,7 @@ export const emailVerificationLink = (link) => {
                                                                     style="line-height:10px">
                                                                     <div style="max-width: 250px;"><img
                                                                             alt="reset-password" height="auto"
-                                                                            src="https://drchex.com/wp-content/uploads/2025/07/newlogo-1024x431.png"
+                                                                            src="https://res.cloudinary.com/dd62irk0g/image/upload/v1782900519/logo-black1_jyozuq.jpg"
                                                                             style="display: block; height: auto; border: 0; width: 100%;"
                                                                             title="reset-password" width="250" /></div>
                                                                 </div>
