@@ -22,6 +22,7 @@ import TopBar from "./TopBar";
 import MegaMenu from "./MegaMenu";
 import { megaMenuData } from "@/data/menuData";
 import CartDrawer from "../CartDrawer";
+import SearchBar  from "./Search";
 
 export default function Header() {
   const [mobileMenu, setMobileMenu] = useState(false);
@@ -98,24 +99,27 @@ export default function Header() {
         }`}
       >
         <div className="max-w-[1400px] mx-auto px-4 sm:px-5 py-4 sm:py-6">
-          <div className="grid grid-cols-3 items-center gap-2 md:gap-4">
+          <div className="grid grid-cols-[1fr_auto_1fr] items-center gap-5 sm:gap-7 md:gap-8">
             {/* Left: Hamburger + Search (desktop) */}
             <div className="flex items-center">
-              <button
-                className="lg:hidden mr-2 sm:mr-4"
-                onClick={() => setMobileMenu(true)}
-              >
-                <Menu size={22} />
-              </button>
+              
+              <div className="fixed overflow-y-auto">
+            {/* Mobile Menu Button */}
+            <button
+              onClick={() => setMobileMenu(true)}
+              className="lg:hidden mr-3"
+              aria-label="Open Menu"
+            >
+              <Menu size={26} />
+            </button>
 
-              <div className="hidden md:flex items-center border-b border-gray-300 w-[160px] lg:w-[250px]">
-                <input
-                  type="text"
-                  placeholder="Search"
-                  className="w-full py-2 outline-none text-sm"
-                />
-                <Search size={20} />
-              </div>
+            {/* Desktop Search */}
+            <div className="hidden lg:block">
+              <SearchBar />
+            </div>
+          </div>
+
+             
             </div>
 
             {/* Center: Logo – two lines on mobile, single line on larger screens */}
@@ -219,7 +223,7 @@ export default function Header() {
 
       {/* Mobile Drawer */}
       <div
-        className={`fixed top-0 left-0 z-50 h-full w-72 bg-white shadow-xl transition-transform duration-300 ${
+        className={`fixed top-0 left-0 z-50 h-full w-72 bg-white shadow-xl transition-transform duration-300 overflow-x-auto ${
           mobileMenu ? "translate-x-0" : "-translate-x-full"
         }`}
       >

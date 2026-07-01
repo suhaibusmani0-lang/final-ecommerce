@@ -625,93 +625,93 @@ export const megaMenuData: MenuItem[] = [
       },
     ],
   },
-  {
-    label: "Holidays",
-    href: "/category/holidays",
-    categories: [
-      {
-        title: "Christmas",
-        href: "/holidays/christmas",
-        links: [
-          { label: "Decor", href: "/holidays/christmas/decor" },
-          { label: "Gifts", href: "/holidays/christmas/gifts" },
-          { label: "Tabletop", href: "/holidays/christmas/tabletop" },
-        ],
-      },
-      {
-        title: "Eid",
-        href: "/holidays/eid",
-        links: [
-          { label: "Bakhoor", href: "/holidays/eid/bakhoor" },
-          { label: "Decor", href: "/holidays/eid/decor" },
-          { label: "Gifts", href: "/holidays/eid/gifts" },
-        ],
-      },
-      {
-        title: "Ramadan",
-        href: "/holidays/ramadan",
-        links: [
-          { label: "Lanterns", href: "/holidays/ramadan/lanterns" },
-          { label: "Decor", href: "/holidays/ramadan/decor" },
-          { label: "Gift Sets", href: "/holidays/ramadan/gift-sets" },
-        ],
-      },
-      {
-        title: "New Year",
-        href: "/holidays/new-year",
-        links: [
-          { label: "Party", href: "/holidays/new-year/party" },
-          { label: "Barware", href: "/holidays/new-year/barware" },
-          { label: "Decor", href: "/holidays/new-year/decor" },
-        ],
-      },
-      {
-        title: "Valentine",
-        href: "/holidays/valentine",
-        links: [
-          { label: "Candles", href: "/holidays/valentine/candles" },
-          { label: "Gifts", href: "/holidays/valentine/gifts" },
-          { label: "Luxury", href: "/holidays/valentine/luxury" },
-        ],
-      },
-      {
-        title: "Seasonal",
-        href: "/holidays/seasonal",
-        links: [
-          { label: "Summer", href: "/holidays/seasonal/summer" },
-          { label: "Winter", href: "/holidays/seasonal/winter" },
-          { label: "Festive", href: "/holidays/seasonal/festive" },
-        ],
-      },
-      {
-        title: "Collections",
-        href: "/holidays/collections",
-        links: [
-          { label: "Premium", href: "/holidays/collections/premium" },
-          { label: "Exclusive", href: "/holidays/collections/exclusive" },
-          { label: "New", href: "/holidays/collections/new" },
-        ],
-      },
-      {
-        title: "Gift Ideas",
-        href: "/holidays/gift-ideas",
-        links: [
-          { label: "Family", href: "/holidays/gift-ideas/family" },
-          { label: "Friends", href: "/holidays/gift-ideas/friends" },
-          { label: "Corporate", href: "/holidays/gift-ideas/corporate" },
-        ],
-      },
-      {
-        title: "Special Events",
-        href: "/holidays/special-events",
-        links: [
-          { label: "Wedding", href: "/holidays/special-events/wedding" },
-          { label: "Birthday", href: "/holidays/special-events/birthday" },
-          { label: "Celebration", href: "/holidays/special-events/celebration" },
-        ],
-      },
-    ],
-  },
+  // {
+  //   label: "Holidays",
+  //   href: "/category/holidays",
+  //   categories: [
+  //     {
+  //       title: "Christmas",
+  //       href: "/holidays/christmas",
+  //       links: [
+  //         { label: "Decor", href: "/holidays/christmas/decor" },
+  //         { label: "Gifts", href: "/holidays/christmas/gifts" },
+  //         { label: "Tabletop", href: "/holidays/christmas/tabletop" },
+  //       ],
+  //     },
+  //     {
+  //       title: "Eid",
+  //       href: "/holidays/eid",
+  //       links: [
+  //         { label: "Bakhoor", href: "/holidays/eid/bakhoor" },
+  //         { label: "Decor", href: "/holidays/eid/decor" },
+  //         { label: "Gifts", href: "/holidays/eid/gifts" },
+  //       ],
+  //     },
+  //     {
+  //       title: "Ramadan",
+  //       href: "/holidays/ramadan",
+  //       links: [
+  //         { label: "Lanterns", href: "/holidays/ramadan/lanterns" },
+  //         { label: "Decor", href: "/holidays/ramadan/decor" },
+  //         { label: "Gift Sets", href: "/holidays/ramadan/gift-sets" },
+  //       ],
+  //     },
+  //     {
+  //       title: "New Year",
+  //       href: "/holidays/new-year",
+  //       links: [
+  //         { label: "Party", href: "/holidays/new-year/party" },
+  //         { label: "Barware", href: "/holidays/new-year/barware" },
+  //         { label: "Decor", href: "/holidays/new-year/decor" },
+  //       ],
+  //     },
+  //     {
+  //       title: "Valentine",
+  //       href: "/holidays/valentine",
+  //       links: [
+  //         { label: "Candles", href: "/holidays/valentine/candles" },
+  //         { label: "Gifts", href: "/holidays/valentine/gifts" },
+  //         { label: "Luxury", href: "/holidays/valentine/luxury" },
+  //       ],
+  //     },
+  //     {
+  //       title: "Seasonal",
+  //       href: "/holidays/seasonal",
+  //       links: [
+  //         { label: "Summer", href: "/holidays/seasonal/summer" },
+  //         { label: "Winter", href: "/holidays/seasonal/winter" },
+  //         { label: "Festive", href: "/holidays/seasonal/festive" },
+  //       ],
+  //     },
+  //     {
+  //       title: "Collections",
+  //       href: "/holidays/collections",
+  //       links: [
+  //         { label: "Premium", href: "/holidays/collections/premium" },
+  //         { label: "Exclusive", href: "/holidays/collections/exclusive" },
+  //         { label: "New", href: "/holidays/collections/new" },
+  //       ],
+  //     },
+  //     {
+  //       title: "Gift Ideas",
+  //       href: "/holidays/gift-ideas",
+  //       links: [
+  //         { label: "Family", href: "/holidays/gift-ideas/family" },
+  //         { label: "Friends", href: "/holidays/gift-ideas/friends" },
+  //         { label: "Corporate", href: "/holidays/gift-ideas/corporate" },
+  //       ],
+  //     },
+  //     {
+  //       title: "Special Events",
+  //       href: "/holidays/special-events",
+  //       links: [
+  //         { label: "Wedding", href: "/holidays/special-events/wedding" },
+  //         { label: "Birthday", href: "/holidays/special-events/birthday" },
+  //         { label: "Celebration", href: "/holidays/special-events/celebration" },
+  //       ],
+  //     },
+  //   ],
+  // },
   {
     label: "contact",
     href: "/contact",

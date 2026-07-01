@@ -33,8 +33,6 @@ export const footerLinks: FooterSection[] = [
     links: [
       { label: "Track Order", href: "/track-order" },
       { label: "Returns & Exchanges", href: "/returns-exchanges" },
-      { label: "Shipping Info", href: "/shipping-info" },
-      { label: "Size Guide", href: "/size-guide" },
       { label: "Contact Us", href: "/contact" },
     ],
   },
@@ -42,9 +40,9 @@ export const footerLinks: FooterSection[] = [
     title: "Company",
     links: [
       { label: "About Us", href: "/about" },
-      { label: "Sustainability", href: "/sustainability" },
-      { label: "Careers", href: "/careers" },
-      { label: "Press", href: "/press" },
+      // { label: "Sustainability", href: "/sustainability" },
+      { label: "Terms of Service", href: "/terms-of-service" },
+     
       { label: "Privacy Policy", href: "/privacy-policy" },
     ],
   },

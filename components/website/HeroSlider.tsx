@@ -55,7 +55,7 @@ export default function HeroSlider() {
   return (
     <section
       className="relative w-full overflow-hidden"
-      style={{ height: "clamp(420px, 85vh, 800px)" }}
+      style={{ height: "clamp(420px, 80vh, 600px)" }}
       onTouchStart={onTouchStart}
       onTouchEnd={onTouchEnd}
     >
