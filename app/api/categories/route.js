@@ -35,13 +35,43 @@ export async function GET(req) {
           sortOption = { createdAt: -1 };
       }
 
+      const priceRanges = (searchParams.get("priceRanges") || "").split(",").filter(Boolean);
+      const isSale = searchParams.get("isSale") === "true";
+
+      const baseQuery = { category: category._id, isActive: true };
+      if (priceRanges.length) {
+        const rangeQueries = priceRanges.map((range) => {
+          switch (range) {
+            case "under500":
+              return { price: { $lt: 500 } };
+            case "500-1000":
+              return { price: { $gte: 500, $lte: 1000 } };
+            case "1000-2000":
+              return { price: { $gte: 1000, $lte: 2000 } };
+            case "2000-5000":
+              return { price: { $gte: 2000, $lte: 5000 } };
+            case "above5000":
+              return { price: { $gt: 5000 } };
+            default:
+              return null;
+          }
+        }).filter(Boolean);
+
+        if (rangeQueries.length) {
+          baseQuery.$or = rangeQueries;
+        }
+      }
+      if (isSale) {
+        baseQuery.salePrice = { $exists: true, $ne: null };
+      }
+
       const [products, total] = await Promise.all([
-        ProductModel.find({ category: category._id, isActive: true })
+        ProductModel.find(baseQuery)
           .populate("category", "name slug")
           .sort(sortOption)
           .skip((page - 1) * limit)
           .limit(limit),
-        ProductModel.countDocuments({ category: category._id, isActive: true }),
+        ProductModel.countDocuments(baseQuery),
       ]);
 
       return jsonRes(200, "Category fetched", { 

@@ -1,12 +1,25 @@
 import Image from "next/image";
 import Link from "next/link";
 import { SlidersHorizontal, Grid, List } from "lucide-react";
+import ProductFilterSidebar from "@/components/website/ProductFilterSidebar";
 
-async function getProducts(page: number = 1, sort: string = "newest") {
+type SearchParams = Record<string, string | string[] | undefined>;
+
+async function getProducts(searchParams: SearchParams) {
+  const params = new URLSearchParams();
+  Object.entries(searchParams).forEach(([key, value]) => {
+    if (value === undefined) return;
+    if (Array.isArray(value)) {
+      value.forEach((v) => params.append(key, v));
+    } else {
+      params.set(key, value);
+    }
+  });
+
   const res = await fetch(
-    `${process.env.NEXT_PUBLIC_BASE_URL || "http://localhost:3000"}/api/products?page=${page}&sort=${sort}`,
+    `${process.env.NEXT_PUBLIC_BASE_URL || "http://localhost:3000"}/api/products?${params.toString()}`,
     {
-     // cache: "no-store",
+      // cache: "no-store",
     }
   );
 
@@ -21,12 +34,12 @@ export default async function ProductsPage({
 }: {
   searchParams: Promise<{ page?: string; sort?: string }>;
 }) {
-  const sp = await searchParams;
+  const sp = await searchParams as SearchParams;
 
-  const page = parseInt(sp.page || "1");
-  const sort = sp.sort || "newest";
+  const page = parseInt(typeof sp.page === "string" ? sp.page : "1");
+  const sort = typeof sp.sort === "string" ? sp.sort : "newest";
 
-  const data = await getProducts(page, sort);
+  const data = await getProducts(sp);
 
   if (!data) {
     return (
@@ -55,15 +68,8 @@ export default async function ProductsPage({
 
           {/* Sidebar */}
           <aside className="lg:w-64 flex-shrink-0">
-            <div className="bg-white rounded-2xl p-6 sticky top-24">
-              <div className="flex items-center justify-between mb-4">
-                <h3 className="font-semibold">Filters</h3>
-                <SlidersHorizontal size={18} />
-              </div>
-
-              <button className="w-full py-2 bg-[#1A1A1A] text-white rounded-lg">
-                Apply Filters
-              </button>
+            <div className="sticky top-24">
+              <ProductFilterSidebar basePath="/products" />
             </div>
           </aside>
 

@@ -1,11 +1,26 @@
 import { notFound } from "next/navigation";
 import Image from "next/image";
 import Link from "next/link";
-import { SlidersHorizontal, Grid, List } from "lucide-react";
+import { Grid, List } from "lucide-react";
+import ProductFilterSidebar from "@/components/website/ProductFilterSidebar";
 
-async function getCategoryData(slug: string, page: number = 1, sort: string = "newest") {
+type SearchParams = Record<string, string | string[] | undefined>;
+
+async function getCategoryData(slug: string, searchParams: SearchParams) {
+  const params = new URLSearchParams();
+  params.set("slug", slug);
+
+  Object.entries(searchParams).forEach(([key, value]) => {
+    if (value === undefined) return;
+    if (Array.isArray(value)) {
+      value.forEach((v) => params.append(key, v));
+    } else {
+      params.set(key, value);
+    }
+  });
+
   const res = await fetch(
-    `${process.env.NEXT_PUBLIC_BASE_URL || 'http://localhost:3000'}/api/categories?slug=${slug}&page=${page}&sort=${sort}`,
+    `${process.env.NEXT_PUBLIC_BASE_URL || "http://localhost:3000"}/api/categories?${params.toString()}`,
     { cache: "no-store" }
   );
   if (!res.ok) return null;
@@ -18,13 +33,13 @@ export default async function CategoryPage({
   searchParams,
 }: {
   params: Promise<{ slug: string }>;
-  searchParams: Promise<{ page?: string; sort?: string }>;
+  searchParams: Promise<Record<string, string | string[] | undefined>>;
 }) {
   const { slug } = await params;
   const sp = await searchParams;
-  const page = parseInt(sp.page || "1");
-  const sort = sp.sort || "newest";
-  const data = await getCategoryData(slug, page, sort);
+  const page = parseInt(typeof sp.page === "string" ? sp.page : "1");
+  const sort = typeof sp.sort === "string" ? sp.sort : "newest";
+  const data = await getCategoryData(slug, sp);
   
   if (!data) notFound();
 
@@ -50,61 +65,8 @@ export default async function CategoryPage({
         <div className="flex flex-col lg:flex-row gap-8">
           {/* Sidebar Filters */}
           <aside className="lg:w-64 flex-shrink-0">
-            <div className="bg-white rounded-2xl p-6 sticky top-24">
-              <div className="flex items-center justify-between mb-4">
-                <h3 className="font-semibold text-[#1A1A1A]">Filters</h3>
-                <SlidersHorizontal size={18} className="text-[#1A1A1A]/60" />
-              </div>
-              
-              {/* Price Filter */}
-              <div className="mb-6">
-                <h4 className="text-sm font-medium text-[#1A1A1A] mb-3">Price Range</h4>
-                <div className="space-y-2">
-                  <label className="flex items-center gap-2 cursor-pointer">
-                    <input type="checkbox" className="rounded border-gray-300" />
-                    <span className="text-sm text-[#1A1A1A]/70">Under ₹500</span>
-                  </label>
-                  <label className="flex items-center gap-2 cursor-pointer">
-                    <input type="checkbox" className="rounded border-gray-300" />
-                    <span className="text-sm text-[#1A1A1A]/70">₹500 - ₹1000</span>
-                  </label>
-                  <label className="flex items-center gap-2 cursor-pointer">
-                    <input type="checkbox" className="rounded border-gray-300" />
-                    <span className="text-sm text-[#1A1A1A]/70">₹1000 - ₹2000</span>
-                  </label>
-                  <label className="flex items-center gap-2 cursor-pointer">
-                    <input type="checkbox" className="rounded border-gray-300" />
-                    <span className="text-sm text-[#1A1A1A]/70">₹2000 - ₹5000</span>
-                  </label>
-                  <label className="flex items-center gap-2 cursor-pointer">
-                    <input type="checkbox" className="rounded border-gray-300" />
-                    <span className="text-sm text-[#1A1A1A]/70">Above ₹5000</span>
-                  </label>
-                </div>
-              </div>
-
-              {/* Badge Filter */}
-              <div className="mb-6">
-                <h4 className="text-sm font-medium text-[#1A1A1A] mb-3">Special Offers</h4>
-                <div className="space-y-2">
-                  <label className="flex items-center gap-2 cursor-pointer">
-                    <input type="checkbox" className="rounded border-gray-300" />
-                    <span className="text-sm text-[#1A1A1A]/70">New Arrivals</span>
-                  </label>
-                  <label className="flex items-center gap-2 cursor-pointer">
-                    <input type="checkbox" className="rounded border-gray-300" />
-                    <span className="text-sm text-[#1A1A1A]/70">Sale</span>
-                  </label>
-                  <label className="flex items-center gap-2 cursor-pointer">
-                    <input type="checkbox" className="rounded border-gray-300" />
-                    <span className="text-sm text-[#1A1A1A]/70">Best Sellers</span>
-                  </label>
-                </div>
-              </div>
-
-              <button className="w-full py-2 bg-[#1A1A1A] text-white rounded-lg text-sm font-medium hover:bg-[#333] transition-colors">
-                Apply Filters
-              </button>
+            <div className="sticky top-24">
+              <ProductFilterSidebar basePath={`/category/${slug}`} />
             </div>
           </aside>
 

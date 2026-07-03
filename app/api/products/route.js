@@ -11,12 +11,12 @@ export async function GET(req) {
     const limit = parseInt(searchParams.get("limit") || "12");
     const search = searchParams.get("search") || "";
     const category = searchParams.get("category") || "";
-    const minPrice = searchParams.get("minPrice");
-    const maxPrice = searchParams.get("maxPrice");
+    const priceRanges = (searchParams.get("priceRanges") || "").split(",").filter(Boolean);
     const sort = searchParams.get("sort") || "newest";
     const isFeatured = searchParams.get("isFeatured") === "true";
     const isNewArrival = searchParams.get("isNewArrival") === "true";
     const isBestSeller = searchParams.get("isBestSeller") === "true";
+    const isSale = searchParams.get("isSale") === "true";
 
     const query = { isActive: true };
     
@@ -31,15 +31,33 @@ export async function GET(req) {
       }
     }
     
-    if (minPrice || maxPrice) {
-      query.price = {};
-      if (minPrice) query.price.$gte = parseFloat(minPrice);
-      if (maxPrice) query.price.$lte = parseFloat(maxPrice);
+if (priceRanges.length) {
+      const rangeQueries = priceRanges.map((range) => {
+        switch (range) {
+          case "under500":
+            return { price: { $lt: 500 } };
+          case "500-1000":
+            return { price: { $gte: 500, $lte: 1000 } };
+          case "1000-2000":
+            return { price: { $gte: 1000, $lte: 2000 } };
+          case "2000-5000":
+            return { price: { $gte: 2000, $lte: 5000 } };
+          case "above5000":
+            return { price: { $gt: 5000 } };
+          default:
+            return null;
+        }
+      }).filter(Boolean);
+
+      if (rangeQueries.length) {
+        query.$or = rangeQueries;
+      }
     }
-    
+
     if (isFeatured) query.isFeatured = true;
     if (isNewArrival) query.isNewArrival = true;
     if (isBestSeller) query.isBestSeller = true;
+    if (isSale) query.salePrice = { $exists: true, $ne: null };
 
     let sortOption = {};
     switch (sort) {

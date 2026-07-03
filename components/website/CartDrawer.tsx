@@ -65,7 +65,6 @@ export default function CartDrawer({ open, onClose }: { open: boolean; onClose: 
           dispatch(setCart(mapApiCartItems(data.data.items)));
         }
       } else {
-        console.error("Failed to update cart:", res.status);
         fetchCart();
       }
     } catch (error) {
