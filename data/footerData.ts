@@ -20,12 +20,12 @@ export const footerLinks: FooterSection[] = [
   {
     title: "Shop",
     links: [
-      { label: "New", href: "/shop/New" },
-      { label: "Decor", href: "/Decor" },
-      { label: "Home Fragrance", href: "/Home Fragrance" },
-      { label: "Bakhoor & Incense", href: "Bakhoor & Incense" },
-      { label: "Tabletop & Bar", href: "Tabletop & Bar" },
-      { label: "Outdoor", href: "/Outdoor" },
+      { label: "New", href: "/category/New" },
+      { label: "Decor", href: "/category/Decor" },
+      { label: "Home Fragrance", href: "/category/Home Fragrance" },
+      { label: "Bakhoor & Incense", href: "/category/bakhoor-incense" },
+      { label: "Tabletop & Bar", href: "/category/tabletop-bar" },
+      { label: "Outdoor", href: "/category/outdoor" },
     ],
   },
   {
