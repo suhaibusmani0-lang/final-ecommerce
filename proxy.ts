@@ -1,5 +1,3 @@
-export const runtime = "edge";
-
 import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
 import { jwtVerify } from "jose";
@@ -138,9 +136,3 @@ export async function proxy(request: NextRequest) {
   // Default: redirect to login for any other route
   return NextResponse.redirect(new URL("/auth/login", request.url));
 }
-
-export const config = {
-  matcher: [
-    "/((?!_next/static|_next/image|favicon.ico|assets|.*\\.(?:svg|png|jpg|jpeg|gif|webp)$).*)",
-  ],
-};
