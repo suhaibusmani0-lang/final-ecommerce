@@ -1,0 +1,2 @@
+globalThis.openNextDebug = false;globalThis.openNextVersion = "4.0.2";globalThis.nextVersion = "16.2.10";
+import{Buffer as r}from"node:buffer";import{AsyncLocalStorage as l}from"node:async_hooks";globalThis.Buffer=r;globalThis.AsyncLocalStorage=l;var e;async function o(t){e||(e=await(await import("./.next/server/middleware.js")).default);let a=await(e.default||e)({handler:e.middleware||e,request:t,page:"middleware"});return globalThis.__openNextAls.getStore()?.pendingPromiseRunner.add(a.waitUntil),a.response}export{o as default};

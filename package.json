@@ -4,8 +4,9 @@
   "private": true,
   "scripts": {
     "dev": "next dev",
-    "build": "next build",
+    "build": "next build && npx open-next build",
     "start": "next start",
+    "deploy": "npm run build && npx wrangler deploy",
     "lint": "eslint"
   },
   "dependencies": {
@@ -28,6 +29,7 @@
     "next-cloudinary": "^6.17.5",
     "next-themes": "^0.4.6",
     "nodemailer": "^9.0.1",
+    "postcss": "^8.5.16",
     "radix-ui": "^1.4.3",
     "razorpay": "^2.9.6",
     "react": "^19.2.7",
@@ -51,6 +53,7 @@
     "@types/react-dom": "^19",
     "eslint": "^9",
     "eslint-config-next": "16.2.1",
+    "open-next": "^0.0.1",
     "tailwindcss": "^4",
     "typescript": "^5"
   },
@@ -58,6 +61,8 @@
     "bcrypt@6.0.0": true,
     "msw@2.12.14": true,
     "sharp@0.34.5": true,
-    "unrs-resolver@1.11.1": true
+    "unrs-resolver@1.11.1": true,
+    "esbuild@0.25.4": true,
+    "esbuild@0.28.1": true
   }
 }
