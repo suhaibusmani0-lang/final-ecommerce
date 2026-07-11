@@ -61,7 +61,8 @@ function matchesRouteGroup(pathname: string, routes: string[]) {
   });
 }
 
-export async function middleware(request: NextRequest) {
+// ✅ YAHAN CHANGE KIYA HAI: 'middleware' ko 'proxy' banaya aur default export kiya
+export default async function proxy(request: NextRequest) {
   const { pathname } = request.nextUrl;
   const token = request.cookies.get("session")?.value;
 
